@@ -9,7 +9,7 @@ WEIGHT_PARAMETER = "e_Distance"
 class GraphMatrix:
 
     # If you don't pass any parameter it'll load the default file included in this repo
-    def __init__(self, file):
+    def __init__(self, file="../assets/6a90_network.xml"):
         print("Loagind matrix from file:", file)
         start_time = time.time()
         xml = open(file, "r").read()
