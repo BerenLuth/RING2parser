@@ -7,9 +7,6 @@ WEIGHT_ENERGY = "e_Energy"
 WEIGHT_DISTANCE = "e_Distance"
 
 
-def matrix_to_file(file):
-    print("Not implemented yet")
-
 
 class GraphMatrix:
 
@@ -38,11 +35,13 @@ class GraphMatrix:
                     print("Error: files have different number of nodes!")
                     return
 
+        self.file_names = files
         self.nodes = nodes
         self.matrix = np.zeros((self.nodes, self.nodes, len(files)))
         self.edges = []
         self.N_floors = len(files)
 
+        # initialize matrix with a really big int for floyd-warshall
         self.initialize_matrix()
 
         floor = 0
@@ -67,23 +66,26 @@ class GraphMatrix:
         return GraphMatrix("../assets/6a90_network.xml")
 
     @staticmethod
-    def init_random_test(nodes, floors, density=0.2):
+    def init_random_test(nodes, floors, density=0.1):
         graph = GraphMatrix()
+        graph.file_names = ["test"]
         graph.nodes = nodes
         graph.N_floors = floors
         graph.matrix = np.zeros((nodes, nodes, floors))
         graph.edges = [0]*floors
 
+        # initialize matrix with a really big int for floyd-warshall
         graph.initialize_matrix()
-
-        graph.print_matrix()
 
         for r in range(nodes):
             for c in range(nodes):
                 for f in range(floors):
-                    if random.random() < density:
-                        graph.matrix[r][c][f] = 1
-                        graph.edges[f] += 1
+                    if r == c:
+                        graph.matrix[r][c][f] = 0
+                    else:
+                        if random.random() < density:
+                            graph.matrix[r][c][f] = random.randint(1, 10)
+                            graph.edges[f] += 1
 
         return graph
 
@@ -95,6 +97,9 @@ class GraphMatrix:
 
     def get_dimen(self):
         return self.nodes
+
+    def name(self):
+        return self.file_names[0]
 
     def print_info(self):
         n_edges = 0
@@ -109,3 +114,29 @@ class GraphMatrix:
                     self.matrix[row][col][floor] = 100000.0
 
 
+def matrix_to_file(graph: GraphMatrix, dist, pred):
+    # print("Not implemented yet")
+
+    n = graph.nodes
+    file = open("../output/" + str(graph.name()) + ".txt", "w")
+    file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tOriginal/Distance/Predecessors")
+
+    file.write("\n")
+    for r in range(n):
+        for c in range(n):
+            file.write(str(graph.matrix[r][c]) + "\t")
+        file.write("\n")
+
+    file.write("\n")
+    for r in range(n):
+        for c in range(n):
+            file.write(str(dist[r][c]) + "\t")
+        file.write("\n")
+
+    file.write("\n")
+    for r in range(n):
+        for c in range(n):
+            file.write(str(pred[r][c]) + "\t")
+        file.write("\n")
+
+    file.close()
