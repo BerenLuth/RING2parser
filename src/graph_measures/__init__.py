@@ -16,13 +16,13 @@ class GraphMeasures:
             for j in range(n):
                 el = graph.get_element(i, j)[0]
                 dist[i][j] = el
-                if el < 100000.0:
+                if el < 1000.0:
                     pred[i][j] = i
                 else:
                     pred[i][j] = None
 
         print("Initialization finished\nTime taken:", time.time() - stime)
-        print("Espected time:", (time.time() - stime) * n*1.5 / 60, " minutes\n\n")
+        print("Expected time:", (time.time() - stime) * n*1.5 / 60, " minutes\n\n")
 
         stime = time.time()
         counter = 0

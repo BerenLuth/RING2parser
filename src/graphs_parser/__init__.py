@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as Soup
 import numpy as np
 import time
 import random
+import re
 
 WEIGHT_ENERGY = "e_Energy"
 WEIGHT_DISTANCE = "e_Distance"
@@ -68,7 +69,7 @@ class GraphMatrix:
     @staticmethod
     def init_random_test(nodes, floors, density=0.1):
         graph = GraphMatrix()
-        graph.file_names = ["test"]
+        graph.file_names = ["/test.xml"]
         graph.nodes = nodes
         graph.N_floors = floors
         graph.matrix = np.zeros((nodes, nodes, floors))
@@ -99,7 +100,8 @@ class GraphMatrix:
         return self.nodes
 
     def name(self):
-        return self.file_names[0]
+        r = re.compile('/([^/]+)\.xml')
+        return r.search(self.file_names[0])[1]
 
     def print_info(self):
         n_edges = 0
@@ -111,7 +113,7 @@ class GraphMatrix:
         for row in range(self.nodes):
             for col in range(self.nodes):
                 for floor in range(self.N_floors):
-                    self.matrix[row][col][floor] = 100000.0
+                    self.matrix[row][col][floor] = 1000.0
 
 
 def matrix_to_file(graph: GraphMatrix, dist, pred):
@@ -119,24 +121,33 @@ def matrix_to_file(graph: GraphMatrix, dist, pred):
 
     n = graph.nodes
     file = open("../output/" + str(graph.name()) + ".txt", "w")
-    file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tOriginal/Distance/Predecessors")
+    file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
 
+    #print("Writing result on file: 1/3")
+    #file.write("\n")
+    #for r in range(n):
+    #    for c in range(n):
+    #        file.write(str(graph.matrix[r][c]) + "\t")
+    #    file.write("\n")
+
+    print("Writing distances on file: 1/2")
     file.write("\n")
     for r in range(n):
         for c in range(n):
-            file.write(str(graph.matrix[r][c]) + "\t")
+            if dist[r][c] == 1000.0:
+                file.write("-\t")
+            else:
+                file.write(str(dist[r][c]) + "\t")
         file.write("\n")
 
+    print("Writing predecessors on file: 2/2")
     file.write("\n")
     for r in range(n):
         for c in range(n):
-            file.write(str(dist[r][c]) + "\t")
-        file.write("\n")
-
-    file.write("\n")
-    for r in range(n):
-        for c in range(n):
-            file.write(str(pred[r][c]) + "\t")
+            if 0 <= pred[r][c] <= graph.nodes:
+                file.write(str(pred[r][c]) + "\t")
+            else:
+                file.write("-\t")
         file.write("\n")
 
     file.close()
