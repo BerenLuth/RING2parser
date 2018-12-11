@@ -7,7 +7,6 @@ WEIGHT_ENERGY = "e_Energy"
 WEIGHT_DISTANCE = "e_Distance"
 
 
-
 class GraphMatrix:
 
     # If you don't pass any parameter it'll load the default file included in this repo
@@ -62,7 +61,8 @@ class GraphMatrix:
         self.print_info()
         print("**************************************\nTotal loading time: ", time.time() - start_time, "\n")
 
-    def init_test(self):
+    @staticmethod
+    def init_test():
         return GraphMatrix("../assets/6a90_network.xml")
 
     @staticmethod

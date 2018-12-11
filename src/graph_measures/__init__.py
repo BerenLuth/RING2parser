@@ -2,7 +2,8 @@ from src.graphs_parser import GraphMatrix as gm
 import numpy as np
 import time
 
-class BetweenessCentrality:
+
+class GraphMeasures:
 
     @staticmethod
     def short_paths(graph: gm):
@@ -10,7 +11,6 @@ class BetweenessCentrality:
         stime = time.time()
         n = graph.get_dimen()
         dist = np.zeros((n, n))
-        #pred = [[None]*n]*n
         pred = np.zeros((n, n))
         for i in range(n):
             for j in range(n):
@@ -41,3 +41,23 @@ class BetweenessCentrality:
         print("**************************************\nTotal time: ", time.time() - stime, "\n")
         return dist, pred
 
+    @staticmethod
+    def closeness(n, dist):
+        cn = np.zeros(n)
+        for i in range(n):
+            for j in range(n):
+                cn[i] += dist[i][j]
+        for k in range(n):
+            cn[i] = n / cn[i]
+        return cn
+
+    @staticmethod
+    def betweeness(n, pred):
+        bn = np.zeros((n))
+        for i in range(n):
+            for j in range(n):
+                if pred[i][j] is not None:
+                    bn[pred[i][j]] += 1
+        for k in range(n):
+            bn[i] = bn[i] / (n * n)
+        return bn
