@@ -38,6 +38,8 @@ class GraphMatrix:
         self.edges = []
         self.N_floors = len(files)
 
+        self.initialize_matrix()
+
         floor = 0
         for xml in parsed:
             edges = xml.find_all("edge")
@@ -77,3 +79,8 @@ class GraphMatrix:
             n_edges += edge
         print("# Nodes:\t", self.nodes, "\n# Floors:\t", self.N_floors, "\n# Edges:\t", n_edges)
 
+    def initialize_matrix(self):
+        for row in range(self.nodes):
+            for col in range(self.nodes):
+                for floor in range(self.N_floors):
+                    self.matrix[row][col][floor] = 100000.0
