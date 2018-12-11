@@ -1,9 +1,14 @@
 from bs4 import BeautifulSoup as Soup
 import numpy as np
 import time
+import random
 
 WEIGHT_ENERGY = "e_Energy"
 WEIGHT_DISTANCE = "e_Distance"
+
+
+def matrix_to_file(file):
+    print("Not implemented yet")
 
 
 class GraphMatrix:
@@ -61,16 +66,34 @@ class GraphMatrix:
     def init_test(self):
         return GraphMatrix("../assets/6a90_network.xml")
 
+    @staticmethod
+    def init_random_test(nodes, floors, density=0.2):
+        graph = GraphMatrix()
+        graph.nodes = nodes
+        graph.N_floors = floors
+        graph.matrix = np.zeros((nodes, nodes, floors))
+        graph.edges = [0]*floors
+
+        graph.initialize_matrix()
+
+        graph.print_matrix()
+
+        for r in range(nodes):
+            for c in range(nodes):
+                for f in range(floors):
+                    if random.random() < density:
+                        graph.matrix[r][c][f] = 1
+                        graph.edges[f] += 1
+
+        return graph
+
     def print_matrix(self):
         print(self.matrix)
 
     def get_element(self, row, col):
         return self.matrix[row][col]
 
-    def get_rows(self):
-        return self.nodes
-
-    def get_cols(self):
+    def get_dimen(self):
         return self.nodes
 
     def print_info(self):
@@ -84,3 +107,5 @@ class GraphMatrix:
             for col in range(self.nodes):
                 for floor in range(self.N_floors):
                     self.matrix[row][col][floor] = 100000.0
+
+
