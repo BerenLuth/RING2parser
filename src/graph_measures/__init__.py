@@ -7,7 +7,7 @@ class GraphMeasures:
 
     @staticmethod
     def short_paths(graph: gm):
-        print("\nStarting Floyd-Warshall\n")
+        print("#############################\n## Starting floyd-warshall ##\n#############################\n")
         stime = time.time()
         n = graph.get_dimen()
         dist = np.zeros((n, n))
@@ -22,7 +22,7 @@ class GraphMeasures:
                     pred[i][j] = None
 
         print("Initialization finished\nTime taken:", time.time() - stime)
-        print("Expected time:", (time.time() - stime) * n*1.5 / 60, " minutes\n\n")
+        print("Expected time:", int((time.time() - stime) * n*1.5 / 60), " minutes\n\n")
 
         stime = time.time()
         counter = 0
