@@ -3,10 +3,24 @@ import numpy as np
 import time
 
 
+def average(edges: list):
+    tot = 0
+    for edge in edges:
+        tot += edge
+    return tot/len(edges)
+
+
+def minimum(edges: list):
+    return min(edges)
+
+def maximum(edges: list):
+    return max(edges)
+
+
 class GraphMeasures:
 
     @staticmethod
-    def short_paths(graph: gm):
+    def short_paths(graph: gm, multi_edge_function=minimum):
         print("#############################\n## Starting floyd-warshall ##\n#############################\n")
         stime = time.time()
         n = graph.get_dimen()
@@ -14,9 +28,9 @@ class GraphMeasures:
         pred = np.zeros((n, n))
         for i in range(n):
             for j in range(n):
-                el = graph.get_element(i, j)[0]
+                el = multi_edge_function(graph.get_element(i, j))
                 dist[i][j] = el
-                if el < 1000.0:
+                if el < 100000.0:
                     pred[i][j] = i
                 else:
                     pred[i][j] = None
@@ -61,3 +75,6 @@ class GraphMeasures:
         for k in range(n):
             bn[i] = bn[i] / (n * n)
         return bn
+
+
+

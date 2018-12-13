@@ -1,6 +1,7 @@
 from src.graphs_parser import GraphMatrix
 from src.graph_measures import GraphMeasures as measures
 from src.graphs_parser import matrix_to_file
+from src.graph_measures import *
 
 # It's exactly the same file just to try read from multiple files
 x = GraphMatrix("../assets/3rvy_van0_network.xml")

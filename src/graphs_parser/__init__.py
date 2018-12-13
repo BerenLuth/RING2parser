@@ -124,7 +124,7 @@ class GraphMatrix:
         for row in range(self.n_nodes):
             for col in range(self.n_nodes):
                 for floor in range(self.n_floors):
-                    self.matrix[row][col][floor] = 1000.0
+                    self.matrix[row][col][floor] = 100000.0
 
 
 def matrix_to_file(graph: GraphMatrix, dist, pred):
