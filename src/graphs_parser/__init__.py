@@ -12,60 +12,54 @@ WEIGHT_DISTANCE = "e_Distance"
 class GraphMatrix:
 
     # If you don't pass any parameter it'll load the default file included in this repo
-    def __init__(self, *files):
-        if len(files) == 0:
+    def __init__(self, file):
+        if not file:
             print("You need to give at least one xml file in input")
             return
 
         start_time = time.time()
 
-        parsed = []
-        n_nodes = 0
 
-        for file in files:
-            print("Loagind matrix from file:", file)
+        print("Loagind matrix from file:", file)
 
-            xml = open(file, "r").read()
-            xml = Soup(xml, 'lxml')
-            parsed.append(xml)
+        xml = open(file, "r").read()
+        xml = Soup(xml, 'lxml')
 
-            if n_nodes == 0:
-                n_nodes = len(xml.find_all("node"))
-            else:
-                if n_nodes != len(xml.find_all("node")):
-                    print("Error: files have different number of nodes!")
-                    return
-
-        self.file_names = files
-        self.n_nodes = n_nodes
+        self.file_name = file
+        self.n_nodes = len(xml.find_all("node"))
         self.nodes = []
-        self.matrix = np.zeros((self.n_nodes, self.n_nodes, len(files)))
+        self.matrix = [[[100000.0]]*self.n_nodes]*self.n_nodes  # np.zeros((self.n_nodes, self.n_nodes))
         self.edges = []
-        self.n_floors = len(files)
 
         # initialize matrix with a really big int for floyd-warshall
-        self.initialize_matrix()
+        # self.initialize_matrix()
 
-        floor = 0
-        for xml in parsed:
-            nodes = xml.find_all("node")
-            for node in nodes:
-                self.nodes.append(node.find(key="v_NodeId").get_text())
+        nodes = xml.find_all("node")
+        for node in nodes:
+            self.nodes.append(node.find(key="v_NodeId").get_text())
 
+        edges = xml.find_all("edge")
+        self.edges.append(len(edges))
+        m = 0
+        n = 0
+        for edge in edges:
+            # print(edge['source'], edge['target'])
+            src = int(edge['source'][1:])
+            trg = int(edge['target'][1:])
 
-            edges = xml.find_all("edge")
-            self.edges.append(len(edges))
+            # Choose between DISTANCE or ENERGY
+            weight = float(edge.find(key=WEIGHT_DISTANCE).get_text())
 
-            for edge in edges:
-                # print(edge['source'], edge['target'])
-                src = int(edge['source'][1:])
-                trg = int(edge['target'][1:])
+            if self.matrix[src][trg] == [100000.0]:
+                self.matrix[src][trg] = [weight]
+                self.matrix[trg][src] = [weight]
+                n += 1
+            else:
+                self.matrix[src][trg].append(weight)
+                self.matrix[trg][src].append(weight)
+                m += 1
 
-                # Choose between DISTANCE or ENERGY
-                weight = float(edge.find(key=WEIGHT_DISTANCE).get_text())
-                self.matrix[src][trg][floor] = weight
-                self.matrix[trg][src][floor] = weight
-            floor += 1
+        print("Clean", n, "Multiedge", m)
 
         self.print_info()
         print("**************************************\nTotal loading time: ", time.time() - start_time, "\n")
@@ -112,19 +106,18 @@ class GraphMatrix:
 
     def name(self):
         r = re.compile('/([^/]+)\.xml')
-        return r.search(self.file_names[0])[1]
+        return r.search(self.file_name)[1]
 
     def print_info(self):
         n_edges = 0
         for edge in self.edges:
             n_edges += edge
-        print("# Nodes:\t", self.n_nodes, "\n# Floors:\t", self.n_floors, "\n# Edges:\t", n_edges)
+        print("# Nodes:\t", self.n_nodes, "\n# Edges:\t", n_edges)
 
     def initialize_matrix(self):
         for row in range(self.n_nodes):
             for col in range(self.n_nodes):
-                for floor in range(self.n_floors):
-                    self.matrix[row][col][floor] = 100000.0
+                self.matrix[row][col] = [100000.0]
 
 
 def matrix_to_file(graph: GraphMatrix, dist, pred):
