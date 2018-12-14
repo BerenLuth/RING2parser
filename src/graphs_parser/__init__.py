@@ -40,11 +40,11 @@ class GraphMatrix:
         self.file_name = file
         self.n_nodes = len(xml.find_all("node"))
         self.nodes = []
-        self.matrix = [[[100000.0]*len(self.interactions)]*self.n_nodes]*self.n_nodes  # np.zeros((self.n_nodes, self.n_nodes))
+        self.matrix = np.zeros((self.n_nodes, self.n_nodes, len(self.interactions))) # [[[100000.0]*len(self.interactions)]*self.n_nodes]*self.n_nodes  # np.zeros((self.n_nodes, self.n_nodes))
         self.edges = []
 
         # initialize matrix with a really big int for floyd-warshall
-        # self.initialize_matrix()
+        self.initialize_matrix()
 
         nodes = xml.find_all("node")
         for node in nodes:
@@ -60,9 +60,9 @@ class GraphMatrix:
 
             # Choose between DISTANCE or ENERGY
             weight = float(edge.find(key=WEIGHT_DISTANCE).get_text())
-            self.matrix[src][trg][interaction] = weight
-            print(src, trg, interaction, weight, self.matrix[src][trg])
-
+            self.matrix[src, trg, interaction] = weight
+            self.matrix[trg, src, interaction] = weight
+            # print(src, trg, interaction, weight, self.matrix[src, trg])
 
         self.print_info()
         print("**************************************\nTotal loading time: ", time.time() - start_time, "\n")
@@ -99,12 +99,12 @@ class GraphMatrix:
         print(self.matrix)
 
     def get_elements_list(self, row, col):
-        #print(self.matrix[row][col])
-        return self.matrix[row][col]
+        # print(self.matrix[row][col])
+        return self.matrix[row, col]
 
     def get_element_floor(self, row, col, floor):
-        print(self.matrix[row][col][floor])
-        return self.matrix[row][col][floor]
+        # print(self.matrix[row][col][floor])
+        return self.matrix[row, col, floor]
 
     def get_dimen(self):
         return self.n_nodes
@@ -122,7 +122,10 @@ class GraphMatrix:
             n_edges += edge
         print("# Nodes:\t", self.n_nodes, "\n# Edges:\t", n_edges)
 
-    def get_floor(self, interaction: str):
+    def get_interaction_number(self):
+        return len(self.interactions)
+
+    def get_interaction_id(self, interaction: str):
         if "ALL" in interaction:
             return -1
         try:
@@ -134,7 +137,9 @@ class GraphMatrix:
     def initialize_matrix(self):
         for row in range(self.n_nodes):
             for col in range(self.n_nodes):
-                self.matrix[row][col] = [100000.0]
+                if row != col:
+                    for f in range(self.get_interaction_number()):
+                        self.matrix[row, col, f] = 100000.0
 
 
 def interaction_to_key(name: str):

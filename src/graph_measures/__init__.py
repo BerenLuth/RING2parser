@@ -22,7 +22,7 @@ class GraphMeasures:
     @staticmethod
     def short_paths(graph: gm, interaction: str="all", multi_edge_function=minimum, to_file: bool=False):
         interaction = interaction_to_key(interaction)
-        floor = graph.get_floor(interaction)
+        floor = graph.get_interaction_id(interaction)
         if floor is -2:
             print("Interaction value not valid")
             return None
@@ -47,7 +47,7 @@ class GraphMeasures:
                 else:
                     pred[i][j] = None
 
-        print(dist)
+
         print("Initialization finished\nTime taken:", time.time() - stime)
         print("Expected time:", int((time.time() - stime) * n*1.5 / 60), " minutes\n\n")
 
