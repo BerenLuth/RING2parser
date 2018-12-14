@@ -25,10 +25,22 @@ class GraphMatrix:
         xml = open(file, "r").read()
         xml = Soup(xml, 'lxml')
 
+        self.interactions = dict()
+
+        edges = xml.find_all("edge")
+        floor = 0
+        for edge in edges:
+            tmp = interaction_to_key(edge.find(key="e_Interaction").get_text())
+            if tmp not in self.interactions:
+                self.interactions[tmp] = floor
+                floor += 1
+
+        print(self.interactions)
+
         self.file_name = file
         self.n_nodes = len(xml.find_all("node"))
         self.nodes = []
-        self.matrix = [[[100000.0]]*self.n_nodes]*self.n_nodes  # np.zeros((self.n_nodes, self.n_nodes))
+        self.matrix = [[[100000.0]*len(self.interactions)]*self.n_nodes]*self.n_nodes  # np.zeros((self.n_nodes, self.n_nodes))
         self.edges = []
 
         # initialize matrix with a really big int for floyd-warshall
@@ -38,28 +50,19 @@ class GraphMatrix:
         for node in nodes:
             self.nodes.append(node.find(key="v_NodeId").get_text())
 
-        edges = xml.find_all("edge")
         self.edges.append(len(edges))
-        m = 0
-        n = 0
         for edge in edges:
             # print(edge['source'], edge['target'])
             src = int(edge['source'][1:])
             trg = int(edge['target'][1:])
+            tmp_inter = edge.find(key="e_Interaction").get_text()
+            interaction = self.interactions[interaction_to_key(tmp_inter)]
 
             # Choose between DISTANCE or ENERGY
             weight = float(edge.find(key=WEIGHT_DISTANCE).get_text())
+            self.matrix[src][trg][interaction] = weight
+            print(src, trg, interaction, weight, self.matrix[src][trg])
 
-            if self.matrix[src][trg] == [100000.0]:
-                self.matrix[src][trg] = [weight]
-                self.matrix[trg][src] = [weight]
-                n += 1
-            else:
-                self.matrix[src][trg].append(weight)
-                self.matrix[trg][src].append(weight)
-                m += 1
-
-        print("Clean", n, "Multiedge", m)
 
         self.print_info()
         print("**************************************\nTotal loading time: ", time.time() - start_time, "\n")
@@ -95,8 +98,13 @@ class GraphMatrix:
     def print_matrix(self):
         print(self.matrix)
 
-    def get_element(self, row, col):
+    def get_elements_list(self, row, col):
+        #print(self.matrix[row][col])
         return self.matrix[row][col]
+
+    def get_element_floor(self, row, col, floor):
+        print(self.matrix[row][col][floor])
+        return self.matrix[row][col][floor]
 
     def get_dimen(self):
         return self.n_nodes
@@ -114,17 +122,35 @@ class GraphMatrix:
             n_edges += edge
         print("# Nodes:\t", self.n_nodes, "\n# Edges:\t", n_edges)
 
+    def get_floor(self, interaction: str):
+        if "ALL" in interaction:
+            return -1
+        try:
+            return self.interactions[interaction]
+        except KeyError:
+            print("This interaction is not present in this protein")
+            return -2
+
     def initialize_matrix(self):
         for row in range(self.n_nodes):
             for col in range(self.n_nodes):
                 self.matrix[row][col] = [100000.0]
 
 
-def matrix_to_file(graph: GraphMatrix, dist, pred):
+def interaction_to_key(name: str):
+    r = re.compile('(.*):.*')
+    x = r.search(name.upper())
+    if x is None:
+        return name.upper()
+    else:
+        return x[1]
+
+
+def matrix_to_file(graph: GraphMatrix, dist, pred, interaction: str=''):
     # print("Not implemented yet")
 
     n = graph.n_nodes
-    file = open("../output/" + str(graph.name()) + "_res.csv", "w")
+    file = open("../output/" + str(graph.name()) + "_" + str(interaction) + ".csv", "w")
     # file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
     writer = csv.writer(file, delimiter=";", lineterminator='\n')
     writer.writerow(('source', 'destination', 'distance', 'predecessor'))
@@ -147,21 +173,3 @@ def matrix_to_file(graph: GraphMatrix, dist, pred):
                 writer.writerow((r, c, d, p))
 
     file.close()
-
-
-'''                file.write("-\t")
-            else:
-                file.write(str(dist[r][c]) + "\t")
-        file.write("\n")
-
-    print("Writing predecessors on file: 2/2")
-    file.write("\n")
-    for r in range(n):
-        for c in range(n):
-            if 0 <= pred[r][c] <= graph.nodes:
-                file.write(str(pred[r][c]) + "\t")
-            else:
-                file.write("-\t")
-        file.write("\n")
-    '''
-

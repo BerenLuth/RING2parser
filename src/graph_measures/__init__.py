@@ -1,4 +1,4 @@
-from src.graphs_parser import GraphMatrix as gm
+from src.graphs_parser import GraphMatrix as gm, matrix_to_file, interaction_to_key
 import numpy as np
 import time
 
@@ -20,7 +20,13 @@ def maximum(edges: list):
 class GraphMeasures:
 
     @staticmethod
-    def short_paths(graph: gm, multi_edge_function=minimum):
+    def short_paths(graph: gm, interaction: str="all", multi_edge_function=minimum, to_file: bool=False):
+        interaction = interaction_to_key(interaction)
+        floor = graph.get_floor(interaction)
+        if floor is -2:
+            print("Interaction value not valid")
+            return None
+
         print("#############################\n## Starting floyd-warshall ##\n#############################\n")
         stime = time.time()
         n = graph.get_dimen()
@@ -28,13 +34,20 @@ class GraphMeasures:
         pred = np.zeros((n, n))
         for i in range(n):
             for j in range(n):
-                el = multi_edge_function(graph.get_element(i, j))
+                # Mode all interactions, default keep the minimum value
+                if floor is -1:
+                    el = multi_edge_function(graph.get_elements_list(i, j))
+                # if we're looking for a specific interaction we read it
+                else:
+                    el = graph.get_element_floor(i, j, floor)
+
                 dist[i][j] = el
                 if el < 100000.0:
                     pred[i][j] = i
                 else:
                     pred[i][j] = None
 
+        print(dist)
         print("Initialization finished\nTime taken:", time.time() - stime)
         print("Expected time:", int((time.time() - stime) * n*1.5 / 60), " minutes\n\n")
 
@@ -52,7 +65,11 @@ class GraphMeasures:
                         print("Progress:", str(round(counter/tot*100, 1)) + "%", "\t\tTotal cycles:", str(counter) + "/" + str(tot))
                     counter += 1
         print("Progress: 100%", "\t\tTotal cycles:", str(counter) + "/" + str(tot))
-        print("**************************************\nTotal time: ", time.time() - stime, "\n")
+        print("*******************************\nTotal time:", int((time.time() - stime) * n*1.5 / 60), "minutes\n\n")
+
+        if to_file is True:
+            matrix_to_file(graph, dist, pred, interaction)
+
         return dist, pred
 
     @staticmethod

@@ -10,8 +10,6 @@ x = GraphMatrix("../assets/3rvy_van5_network.xml")
 # print(x.get_element(0, 3))
 # x.print_matrix()
 
-#print(x.get_node(5))
 
-#paths = measures.short_paths(x)
-#matrix_to_file(x, paths[0], paths[1])
-
+paths = measures.short_paths(x, interaction='HBOND:MC_MC', to_file=True)
+#paths = measures.short_paths(x, interaction="IONIC", to_file=True)
