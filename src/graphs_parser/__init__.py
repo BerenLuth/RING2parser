@@ -8,6 +8,8 @@ import csv
 WEIGHT_ENERGY = "e_Energy"
 WEIGHT_DISTANCE = "e_Distance"
 
+REALLY_HIGH_NUMBER = 100000.0
+
 
 class GraphMatrix:
 
@@ -139,7 +141,7 @@ class GraphMatrix:
             for col in range(self.n_nodes):
                 if row != col:
                     for f in range(self.get_interaction_number()):
-                        self.matrix[row, col, f] = 100000.0
+                        self.matrix[row, col, f] = REALLY_HIGH_NUMBER
 
 
 def interaction_to_key(name: str):
@@ -151,11 +153,11 @@ def interaction_to_key(name: str):
         return x[1]
 
 
-def matrix_to_file(graph: GraphMatrix, dist, pred, interaction: str=''):
+def matrix_to_cache(graph: GraphMatrix, dist, pred, interaction: str= ''):
     # print("Not implemented yet")
 
     n = graph.n_nodes
-    file = open("../output/" + str(graph.name()) + "_" + str(interaction) + ".csv", "w")
+    file = open("../cache/" + str(graph.name()) + "_" + str(interaction) + ".csv", "w")
     # file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
     writer = csv.writer(file, delimiter=";", lineterminator='\n')
     writer.writerow(('source', 'destination', 'distance', 'predecessor'))
@@ -178,3 +180,29 @@ def matrix_to_file(graph: GraphMatrix, dist, pred, interaction: str=''):
                 writer.writerow((r, c, d, p))
 
     file.close()
+
+
+def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
+    try:
+        file = open("../cache/" + str(graph.name()) + "_" + str(interaction) + ".csv", "r")
+    except FileNotFoundError:
+        return None
+
+    matrix_reader = csv.reader(file, delimiter=';', lineterminator='\n')
+    next(matrix_reader)
+
+    n = graph.get_dimen()
+    dist = np.zeros((n, n))
+    pred = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            dist[i, j] = REALLY_HIGH_NUMBER
+            pred[i, j] = None
+
+    for row in matrix_reader:
+        src = row[0]
+        trg = row[1]
+        dist[int(src), int(trg)] = row[2]
+        pred[int(src), int(trg)] = row[3]
+
+    return dist, pred
