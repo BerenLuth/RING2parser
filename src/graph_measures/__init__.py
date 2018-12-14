@@ -22,7 +22,13 @@ class GraphMeasures:
     @staticmethod
     def short_paths(graph: gm, interaction: str="all", multi_edge_function=minimum, to_file: bool=False):
         interaction = interaction_to_key(interaction)
+        print("Analysis for", graph.name(), "on interaction", interaction)
+
         floor = graph.get_interaction_id(interaction)
+
+        if floor is -2:
+            print("Interaction value not valid")
+            return None
 
         x = cache_to_matrix(graph, interaction)
         if x is not None:
@@ -30,10 +36,6 @@ class GraphMeasures:
             return x
         else:
             print("File not ready, need to compute shortest paths")
-
-        if floor is -2:
-            print("Interaction value not valid")
-            return None
 
         print("#############################\n## Starting floyd-warshall ##\n#############################\n")
         stime = time.time()
@@ -103,13 +105,12 @@ class GraphMeasures:
         for i in range(n):
             for j in range(n):
                 k = j
-                if pred[i][k] is not None:
-                    while int(pred[i][k]) != i:
-                        if pred[i][j] is not None:
-                            bn[int(pred[i][j])] += 1
+                while pred[i][k] is not None and int(pred[i][k]) != i:
+                    if pred[i][k] is not None:
+                        bn[int(pred[i][k])] += 1
                         k = int(pred[i][k])
-                    if pred[i][j] is not None:
-                        bn[int(pred[i][j])] += 1
+                if pred[i][j] is not None:
+                    bn[int(pred[i][k])] += 1
         for k in range(n):
             bn[i] = bn[i] / (n * n)
 

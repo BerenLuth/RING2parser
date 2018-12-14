@@ -189,7 +189,7 @@ def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
         return None
 
     matrix_reader = csv.reader(file, delimiter=';', lineterminator='\n')
-    next(matrix_reader)
+    next(matrix_reader)     # skip the first line (header)
 
     n = graph.get_dimen()
     dist = np.zeros((n, n))
