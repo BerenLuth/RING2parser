@@ -1,5 +1,5 @@
 # RING2parser
-Parser for Protein analyzer RING 2.0 (University of Padua) with basic graph measurements
+Parser for Protein analyzer RING 2.0 (University of Padua http://protein.bio.unipd.it/ring/) with basic graph measurements such as __shortest paths__ on the graph, __betweenness centrality__ and __closeness centrality__.
 
 ## Instructions
 You can launch this project in two ways:
