@@ -58,7 +58,7 @@ class GraphMeasures:
                 else:
                     pred[i][j] = -1
 
-        print("Initialization finished\nTime taken:", time.time() - stime)
+        print("Initialization finished\nTime taken:", time.time() - stime, "seconds")
         print("\nExpected execution time:", int((time.time() - stime) * n*1.5 / 60), " minutes\n")
 
         stime = time.time()
