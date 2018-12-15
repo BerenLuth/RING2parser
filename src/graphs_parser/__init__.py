@@ -26,7 +26,7 @@ class GraphMatrix:
 
         start_time = time.time()
 
-        print("Loagind matrix from file:", file)
+        print("Loadind matrix from file:", file)
 
         xml = open(file, "r").read()
         xml = Soup(xml, 'lxml')
