@@ -13,4 +13,4 @@ Remember to fill variables in the beginning of  __\__main\__.py__ according to w
         This value can assume different values like: __ALL__ (to analyze all the interactions together) or __HBOND__, __IONIC__ and other types of interections (if they're present in the graph)
 
 
-*The xml file must be the output computed from http://protein.bio.unipd.it/ring/
+*The xml file must be the output computed from http://protein.bio.unipd.it/ring/ (you can find some of these files in __assets/__ folder)
