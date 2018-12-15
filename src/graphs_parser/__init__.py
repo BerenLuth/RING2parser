@@ -5,9 +5,14 @@ import random
 import re
 import csv
 
+# PUT THE RIGHT PATH FOR YOUR DIRECTORIES
+OUTPUT_DIRECTORY = "../output/"
+CACHE_DIRECTORY = "../cache/"
+
+
+# CONSTANTS
 WEIGHT_ENERGY = "e_Energy"
 WEIGHT_DISTANCE = "e_Distance"
-
 REALLY_HIGH_NUMBER = 100000.0
 
 
@@ -20,7 +25,6 @@ class GraphMatrix:
             return
 
         start_time = time.time()
-
 
         print("Loagind matrix from file:", file)
 
@@ -42,7 +46,7 @@ class GraphMatrix:
         self.file_name = file
         self.n_nodes = len(xml.find_all("node"))
         self.nodes = []
-        self.matrix = np.zeros((self.n_nodes, self.n_nodes, len(self.interactions))) # [[[100000.0]*len(self.interactions)]*self.n_nodes]*self.n_nodes  # np.zeros((self.n_nodes, self.n_nodes))
+        self.matrix = np.zeros((self.n_nodes, self.n_nodes, len(self.interactions)))
         self.edges = []
 
         # initialize matrix with a really big int for floyd-warshall
@@ -160,7 +164,7 @@ def matrix_to_cache(graph: GraphMatrix, dist, pred, interaction: str= ''):
     # print("Not implemented yet")
 
     n = graph.n_nodes
-    file = open("../cache/" + str(graph.name()) + "_" + str(interaction) + ".csv", "w")
+    file = open(CACHE_DIRECTORY + str(graph.name()) + "_" + str(interaction) + ".csv", "w")
     # file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
     writer = csv.writer(file, delimiter=";", lineterminator='\n')
     writer.writerow(('source', 'destination', 'distance', 'predecessor'))
@@ -187,7 +191,7 @@ def matrix_to_cache(graph: GraphMatrix, dist, pred, interaction: str= ''):
 
 def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
     try:
-        file = open("../cache/" + str(graph.name()) + "_" + str(interaction) + ".csv", "r")
+        file = open(CACHE_DIRECTORY + str(graph.name()) + "_" + str(interaction) + ".csv", "r")
     except FileNotFoundError:
         return None
 
@@ -213,7 +217,7 @@ def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
 
 def print_output(graph: GraphMatrix, closeness, betweenness, interaction: str='',):
     n = graph.n_nodes
-    file = open("../output/" + str(graph.name()) + "_" + str(interaction) + "_final.csv", "w")
+    file = open(OUTPUT_DIRECTORY + str(graph.name()) + "_" + str(interaction) + "_final.csv", "w")
     # file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
     writer = csv.writer(file, delimiter=";", lineterminator='\n')
     writer.writerow(('node', 'chain', 'position', 'residue', 'closeness', 'betweenness'))
