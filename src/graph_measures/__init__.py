@@ -13,6 +13,7 @@ def average(edges: list):
 def minimum(edges: list):
     return min(edges)
 
+
 def maximum(edges: list):
     return max(edges)
 
@@ -55,7 +56,7 @@ class GraphMeasures:
                 if el < 100000.0:
                     pred[i][j] = i
                 else:
-                    pred[i][j] = None
+                    pred[i][j] = -1
 
         print("Initialization finished\nTime taken:", time.time() - stime)
         print("\nExpected execution time:", int((time.time() - stime) * n*1.5 / 60), " minutes\n")
@@ -91,7 +92,7 @@ class GraphMeasures:
             for j in range(n):
                 cn[i] += dist[i][j]
         for k in range(n):
-            cn[i] = n / cn[i]
+            cn[k] = n / cn[k]
 
         print("*******************************\nTotal time:", (time.time() - stime) / 60, "minutes\n\n")
         return cn
@@ -105,14 +106,18 @@ class GraphMeasures:
         for i in range(n):
             for j in range(n):
                 k = j
-                while pred[i][k] is not None and int(pred[i][k]) != i:
-                    if pred[i][k] is not None:
+                while int(pred[i][k]) != -1 and int(pred[i][k]) != i:
+                    print(k)
+                    if pred[i][k] is not -1:
                         bn[int(pred[i][k])] += 1
                         k = int(pred[i][k])
-                if pred[i][j] is not None:
+                if pred[i][j] is not -1:
                     bn[int(pred[i][k])] += 1
+                print(i, j, pred[i][k])
+
+        # normalization
         for k in range(n):
-            bn[i] = bn[i] / (n * n)
+            bn[k] = bn[k] / (n * n)
 
         print("*******************************\nTotal time:", (time.time() - stime) / 60, "minutes\n\n")
         return bn

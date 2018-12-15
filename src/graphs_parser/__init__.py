@@ -197,7 +197,7 @@ def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
     for i in range(n):
         for j in range(n):
             dist[i, j] = REALLY_HIGH_NUMBER
-            pred[i, j] = None
+            pred[i, j] = -1
 
     for row in matrix_reader:
         src = row[0]
