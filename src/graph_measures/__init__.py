@@ -71,7 +71,7 @@ class GraphMeasures:
                     if dist[i][j] > dist[i][h] + dist[h][j]:
                         dist[i][j] = dist[i][h] + dist[h][j]
                         pred[i][j] = pred[h][j]
-                    if counter % 10000000 == 0:
+                    if counter % (int(tot/100)*5) == 0:
                         print("Progress:", str(round(counter/tot*100, 1)) + "%", "\t\tTotal cycles:", str(counter) + "/" + str(tot))
                     counter += 1
         print("Progress: 100%", "\t\tTotal cycles:", str(counter) + "/" + str(tot))
@@ -101,19 +101,24 @@ class GraphMeasures:
     def betweenness(n, pred):
         print("\n##########################\n## Starting Betweenness ##\n##########################\n")
         stime = time.time()
+        tot = n*n
+        counter = 0
 
         bn = np.zeros(n)
         for i in range(n):
             for j in range(n):
                 k = j
                 while int(pred[i][k]) != -1 and int(pred[i][k]) != i:
-                    print(k)
                     if pred[i][k] is not -1:
                         bn[int(pred[i][k])] += 1
                         k = int(pred[i][k])
                 if pred[i][j] is not -1:
                     bn[int(pred[i][k])] += 1
-                print(i, j, pred[i][k])
+                # print(i, j, pred[i][k])
+
+            if counter % (int(tot / 100) * 5) == 0:
+                print("Progress:", str(round(counter / tot * 100, 1)) + "%", "\t\tTotal cycles:", str(counter) + "/" + str(tot))
+            counter += 1
 
         # normalization
         for k in range(n):

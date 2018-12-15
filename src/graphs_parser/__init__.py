@@ -114,8 +114,11 @@ class GraphMatrix:
     def get_node(self, n):
         return self.nodes[n][-3:]
 
+    def get_node_info(self, n):
+        return self.nodes[n].split(':')
+
     def name(self):
-        r = re.compile('/([^/]+)\.xml')
+        r = re.compile('/([^/]+)_network\.xml')
         return r.search(self.file_name)[1]
 
     def print_info(self):
@@ -206,3 +209,22 @@ def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
         pred[int(src), int(trg)] = row[3]
 
     return dist, pred
+
+
+def print_output(graph: GraphMatrix, closeness, betweenness, interaction: str='',):
+    n = graph.n_nodes
+    file = open("../output/" + str(graph.name()) + "_" + str(interaction) + "_final.csv", "w")
+    # file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
+    writer = csv.writer(file, delimiter=";", lineterminator='\n')
+    writer.writerow(('node', 'chain', 'position', 'residue', 'closeness', 'betweenness'))
+
+    for x in range(n):
+        node_info = graph.get_node_info(x)
+
+        c = closeness[x]
+        b = betweenness[x]
+
+        writer.writerow((x, node_info[0], node_info[1], node_info[3], c, b))
+        # print(x, node_info[0], node_info[1], node_info[3], c, b)
+
+    file.close()
