@@ -3,7 +3,7 @@ Parser for Protein analyzer RING 2.0 (University of Padua http://protein.bio.uni
 
 ## Disclamer
 This project was made during bioinformatics class at Ca' Foscari University of Venice.
-We tried to keep it clean and modular but it's not really ready-to-use and it requires a minimum knowledge about python.
+We tried to keep it clean and modular but it's not really ready-to-use and it requires a minimum knowledge of python.
 
 ## Instructions
 You can launch this project in two ways:
