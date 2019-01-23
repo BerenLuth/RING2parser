@@ -154,17 +154,17 @@ class GraphMatrix:
     def print_adj(self):
         file = open(OUTPUT_DIRECTORY + str(self.name()) + "_adj" + ".csv", "w")
         writer = csv.writer(file, delimiter=";", lineterminator='\n')
-        writer.writerow(('source', 'destination'))
+        writer.writerow(('source', 'destination', 'distance'))
 
 
         for r in range(self.get_dimen()):
             for c in range(self.get_dimen()):
-                exist = False
+                min = 100000
                 for el in self.matrix[r, c]:
-                    if el < 100000:
-                        exist = True
-                if exist:
-                    writer.writerow((r, c))
+                    if el < min:
+                        min = el
+                if min < 100000 and min != 0:
+                    writer.writerow((r, c, min))
 
 
 

@@ -4,7 +4,9 @@ from src.graphs_parser import GraphMatrix, print_output
 from src.graph_measures import GraphMeasures as measures
 from src.graph_measures import *
 
-### VARIABLE INITIALIZATION
+    ###########################
+    # VARIABLE INITIALIZATION #
+    ###########################
 
 # FILL THESE FIELDS BEFORE EXECUTION (Or pass them as args from terminal)
 FILE_NAME = "../assets/3rvy_van0_network.xml"
@@ -21,8 +23,9 @@ if len(sys.argv) == 3:
     INTERACTION = sys.argv[2]
 
 
-
-### MAIN ###
+    ########
+    # MAIN #
+    ########
 
 # It's exactly the same file just to try read from multiple files
 x = GraphMatrix(FILE_NAME)  # load the graph
