@@ -8,9 +8,14 @@ from src.graph_measures import *
 
 # FILL THESE FIELDS BEFORE EXECUTION (Or pass them as args from terminal)
 FILE_NAME = "../assets/3rvy_van0_network.xml"
-INTERACTION = "ALL"   # This can assume values like ALL, HBOND, IONIC
+INTERACTION = "all"   # This can assume values like ALL, HBOND, IONIC
 
-# TERMINAL ARGUMENTS
+
+# TERMINAL ARGUMENTS (only file name)
+if len(sys.argv) == 2:
+    FILE_NAME = sys.argv[1]
+
+# TERMINAL ARGUMENTS (file name and interaction)
 if len(sys.argv) == 3:
     FILE_NAME = sys.argv[1]
     INTERACTION = sys.argv[2]
@@ -20,13 +25,18 @@ if len(sys.argv) == 3:
 ### MAIN ###
 
 # It's exactly the same file just to try read from multiple files
-x = GraphMatrix(FILE_NAME)
+x = GraphMatrix(FILE_NAME)  # load the graph
 
-interaction = interaction_to_key(INTERACTION)
+x.print_adj()   # Print adjacency matrix on output folder
+
+interaction = interaction_to_key(INTERACTION)   # string format based on interaction
+
+# measure short_paths and print a file in cache folder to make it faster next time
 paths = measures.short_paths(x, interaction=interaction, to_file=True)
 
+# once we have the shortest path we can launch closeness and betweenness measurements
 if paths is not None:
     closeness = measures.closeness(x.get_dimen(), paths[0])
     betweenness = measures.betweenness(x.get_dimen(), paths[1])
-    print_output(x, closeness, betweenness, interaction=interaction)
+    print_output(x, closeness, betweenness, interaction=interaction)    # print result in output folder
 

@@ -151,6 +151,23 @@ class GraphMatrix:
                         self.matrix[row, col, f] = REALLY_HIGH_NUMBER
 
 
+    def print_adj(self):
+        file = open(OUTPUT_DIRECTORY + str(self.name()) + "_adj" + ".csv", "w")
+        writer = csv.writer(file, delimiter=";", lineterminator='\n')
+        writer.writerow(('source', 'destination'))
+
+
+        for r in range(self.get_dimen()):
+            for c in range(self.get_dimen()):
+                exist = False
+                for el in self.matrix[r, c]:
+                    if el < 100000:
+                        exist = True
+                if exist:
+                    writer.writerow((r, c))
+
+
+
 def interaction_to_key(name: str):
     r = re.compile('(.*):.*')
     x = r.search(name.upper())
@@ -189,6 +206,7 @@ def matrix_to_cache(graph: GraphMatrix, dist, pred, interaction: str= ''):
     file.close()
 
 
+
 def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
     try:
         file = open(CACHE_DIRECTORY + str(graph.name()) + "_" + str(interaction) + ".csv", "r")
@@ -215,7 +233,7 @@ def cache_to_matrix(graph: GraphMatrix, interaction: str= ''):
     return dist, pred
 
 
-def print_output(graph: GraphMatrix, closeness, betweenness, interaction: str='',):
+def print_output(graph: GraphMatrix, closeness, betweenness, interaction: str=''):
     n = graph.n_nodes
     file = open(OUTPUT_DIRECTORY + str(graph.name()) + "_" + str(interaction) + "_final.csv", "w")
     # file.write("Original filename: " + str(graph.name()) + "\tNodes: " + str(n) + "\tDistance/Predecessors")
